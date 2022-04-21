@@ -5,15 +5,15 @@ import (
 )
 
 type LRU struct {
-	storge models.KeyType
+	cache models.ValueType
 }
 
 func (lru LRU) Get(key models.KeyType) models.ValueType {
-	return lru.storge
+	return lru.cache
 }
 
 func (lru LRU) Add(key models.KeyType, value models.ValueType) {
-	lru.storge = value
+
 }
 
 func (lru LRU) Len() int {

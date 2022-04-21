@@ -4,8 +4,8 @@ import (
 	"container/list"
 )
 
-type KeyType interface{}
-type ValueType interface{}
+type KeyType string
+type ValueType string
 
 type Entry struct {
 	key   KeyType

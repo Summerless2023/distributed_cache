@@ -2,13 +2,12 @@ package main
 
 import (
 	"log"
-
-	"./strategy"
+	"main/strategy"
 )
 
 func main() {
 	log.Println("分布式缓存服务已启动...")
-	var mytest *eliminationstrategy.SampleStrategy
-	mytest = eliminationstrategy.New()
+	factory := new(strategy.StrategyFactory)
+	var mytest = factory.CreateStrategy("sample")
 	mytest.Add("123", "123")
 }

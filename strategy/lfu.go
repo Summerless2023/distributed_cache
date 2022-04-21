@@ -1,1 +1,1 @@
-package eliminationstrategy
+package strategy

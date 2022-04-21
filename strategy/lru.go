@@ -1,7 +1,7 @@
-package eliminationstrategy
+package strategy
 
 import (
-	"../models"
+	"main/models"
 )
 
 type LRU struct {

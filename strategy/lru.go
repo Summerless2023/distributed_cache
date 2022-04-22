@@ -30,7 +30,12 @@ func (lru *LRUCache) Add(key models.KeyType, value models.ValueType) bool {
 	if element, ok := lru.GetCacheMap()[key]; ok {
 		lru.GetCacheList().MoveToFront(element)
 		kv := element.Value.(*models.Entry)
+		var tmpBytes int64 = int64(len(kv.GetValue())) - int64(len(value)) //如果值为正，则表示占用byte增加，值为负则表示占用减少
 		kv.SetValue(value)
+		for lru.GetNbytes()+tmpBytes > lru.GetMaxBytes() {
+			lru.Remove()
+		}
+		lru.AddNBytes(tmpBytes)
 		return true
 	} else { //否则直接增加
 		logrus.Debug("LRU Add (", key, ",", value, ")")

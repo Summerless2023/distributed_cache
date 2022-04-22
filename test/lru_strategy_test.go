@@ -21,10 +21,11 @@ func TestLRUStrategy1(t *testing.T) {
 	factory := new(strategy.StrategyFactory)
 	var mytest strategy.EliminationStrategy = factory.CreateStrategy("lru")
 	mytest.Add("123", "123")
-	if _, ok := mytest.Get("123"); ok {
+	mytest.Add("123", "1")
+	value, ok := mytest.Get("123")
+	if ok && value == "1" {
 		t.Log("测试成功")
 	} else {
-		t.Errorf("LRU Get 函数错误")
+		t.Error("测试失败")
 	}
-
 }

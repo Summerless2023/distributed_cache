@@ -21,7 +21,7 @@ func (lru *LRUCache) Get(key models.KeyType) (models.ValueType, bool) {
 	if element, ok := lru.cacheMap[key]; ok {
 		lru.CacheList.MoveToFront(element)
 		kv := element.Value.(*models.Entry)
-		return kv.Value, true
+		return kv.GetValue(), true
 	}
 	return "", false
 }
@@ -32,11 +32,11 @@ func (lru *LRUCache) Add(key models.KeyType, value models.ValueType) bool {
 	if element, ok := lru.cacheMap[key]; ok {
 		lru.CacheList.MoveToFront(element)
 		kv := element.Value.(*models.Entry)
-		kv.Value = value
+		kv.SetValue(value)
 		return true
 	} else { //否则直接增加
 		logrus.Debug("LRU Add (", key, ",", value, ")")
-		element := lru.CacheList.PushFront(&models.Entry{Key: key, Value: value})
+		element := lru.CacheList.PushFront(models.NewEntry(key, value))
 		lru.cacheMap[key] = element
 		var tmpBytes int64 = int64(len(key) + len(value))
 		for lru.GetNbytes()+tmpBytes > lru.GetMaxBytes() {
@@ -54,9 +54,9 @@ func (lru *LRUCache) Remove() bool {
 	if element != nil {
 		lru.CacheList.Remove(element)
 		kv := element.Value.(*models.Entry)
-		var tmpBytes int64 = int64(len(kv.Key) + len(kv.Value))
+		var tmpBytes int64 = int64(len(kv.GetKey()) + len(kv.GetValue()))
 		lru.SubBytes(tmpBytes)
-		delete(lru.cacheMap, kv.Key)
+		delete(lru.cacheMap, kv.GetKey())
 	}
 	return true
 }

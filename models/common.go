@@ -7,8 +7,31 @@ type ValueType string //cache的value值类型
 
 //存放元素实体的结构体
 type Entry struct {
-	Key   KeyType
-	Value ValueType
+	key   KeyType
+	value ValueType
+}
+
+func (entry *Entry) GetKey() KeyType {
+	return entry.key
+}
+
+func (entry *Entry) GetValue() ValueType {
+	return entry.value
+}
+
+func (entry *Entry) SetKey(key KeyType) {
+	entry.key = key
+}
+
+func (entry *Entry) SetValue(value ValueType) {
+	entry.value = value
+}
+
+func NewEntry(key KeyType, value ValueType) *Entry {
+	return &Entry{
+		key:   key,
+		value: value,
+	}
 }
 
 type StorageCache struct {

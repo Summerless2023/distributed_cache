@@ -49,11 +49,11 @@ func (storageCache *StorageCache) GetNbytes() int64 {
 	return storageCache.nbytes
 }
 
-func (storageCache *StorageCache) AddBytes(bytesNum int64) {
+func (storageCache *StorageCache) AddNBytes(bytesNum int64) {
 	storageCache.nbytes += bytesNum
 }
 
-func (storageCache *StorageCache) SubBytes(bytesNum int64) {
+func (storageCache *StorageCache) SubNBytes(bytesNum int64) {
 	storageCache.nbytes -= bytesNum
 }
 

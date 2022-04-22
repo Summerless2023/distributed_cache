@@ -40,7 +40,7 @@ func (lru *LRUCache) Add(key models.KeyType, value models.ValueType) bool {
 		for lru.GetNbytes()+tmpBytes > lru.GetMaxBytes() {
 			lru.Remove()
 		}
-		lru.AddBytes(tmpBytes)
+		lru.AddNBytes(tmpBytes)
 		return true
 	}
 }
@@ -53,7 +53,7 @@ func (lru *LRUCache) Remove() bool {
 		lru.GetCacheList().Remove(element)
 		kv := element.Value.(*models.Entry)
 		var tmpBytes int64 = int64(len(kv.GetKey()) + len(kv.GetValue()))
-		lru.SubBytes(tmpBytes)
+		lru.SubNBytes(tmpBytes)
 		delete(lru.GetCacheMap(), kv.GetKey())
 	}
 	return true

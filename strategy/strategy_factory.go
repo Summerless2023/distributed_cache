@@ -2,7 +2,6 @@ package strategy
 
 import (
 	"log"
-	"main/models"
 )
 
 type StrategyFactory struct {
@@ -13,13 +12,14 @@ func (strategyFactory StrategyFactory) CreateStrategy(ext string) EliminationStr
 	case "sample":
 		{
 			log.Println("启动Sample 淘汰策略")
-			return &SampleStrategy{
-				make(map[models.KeyType]models.ValueType),
-			}
+			return NewSampleStrategy()
 		}
 
 	case "lru":
-		return nil
+		{
+			log.Println("启动LRU淘汰策略")
+			return NewLRUCache()
+		}
 	}
 	return nil
 }

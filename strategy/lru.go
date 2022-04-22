@@ -1,7 +1,6 @@
 package strategy
 
 import (
-	"container/list"
 	"main/conf"
 	"main/models"
 
@@ -10,7 +9,6 @@ import (
 
 type LRUCache struct {
 	*models.StorageCache
-	cacheMap map[models.KeyType]*list.Element
 	// optional and executed when an entry is purged.
 	// OnEvicted func(key string, value Value)
 }
@@ -18,7 +16,7 @@ type LRUCache struct {
 //根据key获取value
 func (lru *LRUCache) Get(key models.KeyType) (models.ValueType, bool) {
 	logrus.Debug("调用LRU的Get操作，key值为", key)
-	if element, ok := lru.cacheMap[key]; ok {
+	if element, ok := lru.CacheMap[key]; ok {
 		lru.CacheList.MoveToFront(element)
 		kv := element.Value.(*models.Entry)
 		return kv.GetValue(), true
@@ -29,7 +27,7 @@ func (lru *LRUCache) Get(key models.KeyType) (models.ValueType, bool) {
 //根据key和value增加一个value，如果已经存在则更新value
 func (lru *LRUCache) Add(key models.KeyType, value models.ValueType) bool {
 	//如果值已经存在，则更新
-	if element, ok := lru.cacheMap[key]; ok {
+	if element, ok := lru.CacheMap[key]; ok {
 		lru.CacheList.MoveToFront(element)
 		kv := element.Value.(*models.Entry)
 		kv.SetValue(value)
@@ -37,7 +35,7 @@ func (lru *LRUCache) Add(key models.KeyType, value models.ValueType) bool {
 	} else { //否则直接增加
 		logrus.Debug("LRU Add (", key, ",", value, ")")
 		element := lru.CacheList.PushFront(models.NewEntry(key, value))
-		lru.cacheMap[key] = element
+		lru.CacheMap[key] = element
 		var tmpBytes int64 = int64(len(key) + len(value))
 		for lru.GetNbytes()+tmpBytes > lru.GetMaxBytes() {
 			lru.Remove()
@@ -56,7 +54,7 @@ func (lru *LRUCache) Remove() bool {
 		kv := element.Value.(*models.Entry)
 		var tmpBytes int64 = int64(len(kv.GetKey()) + len(kv.GetValue()))
 		lru.SubBytes(tmpBytes)
-		delete(lru.cacheMap, kv.GetKey())
+		delete(lru.CacheMap, kv.GetKey())
 	}
 	return true
 }
@@ -64,6 +62,5 @@ func (lru *LRUCache) Remove() bool {
 func NewLRUCache() *LRUCache {
 	return &LRUCache{
 		StorageCache: models.NewStorageCache(conf.Default_Max_Bytes),
-		cacheMap:     make(map[models.KeyType]*list.Element),
 	}
 }

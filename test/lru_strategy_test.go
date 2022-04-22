@@ -8,7 +8,12 @@ import (
 func TestLRUStrategy(t *testing.T) {
 	factory := new(strategy.StrategyFactory)
 	var mytest strategy.EliminationStrategy = factory.CreateStrategy("lru")
-	mytest.Add("123", "123")
+	mytest.Add("1", "1")
+	mytest.Add("2", "2")
+	mytest.Add("3", "3")
+	// for i := mytest.CacheList.Front(); i != nil; i = mytest.CacheList.Next() {
+	// 	t.Log(i.Value)
+	// }
 	t.Log("测试完成")
 }
 

@@ -9,7 +9,4 @@ type EliminationStrategy interface {
 
 	// Get look ups a key's value
 	Get(key models.KeyType) (models.ValueType, bool)
-
-	// Len the number of cache entries
-	Len() int
 }

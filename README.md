@@ -10,7 +10,7 @@
 ## 运行教程
 
 1.  go build
-2.  ./distributed_cache
+2.  ./main
 
 #### 或者
 

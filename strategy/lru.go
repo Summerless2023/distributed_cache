@@ -2,8 +2,9 @@ package strategy
 
 import (
 	"container/list"
-	"log"
 	"main/models"
+
+	"github.com/sirupsen/logrus"
 )
 
 type LRUCache struct {
@@ -14,7 +15,7 @@ type LRUCache struct {
 }
 
 func (lru LRUCache) Get(key models.KeyType) (models.ValueType, bool) {
-	log.Println("调用LRU的Get操作，key值为", key)
+	logrus.Info("调用LRU的Get操作，key值为", key)
 	if element, ok := lru.cacheMap[key]; ok {
 		kv := element.Value.(*models.Entry)
 		return kv.Value, true

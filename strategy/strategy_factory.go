@@ -1,8 +1,6 @@
 package strategy
 
-import (
-	"log"
-)
+import "github.com/sirupsen/logrus"
 
 type StrategyFactory struct {
 }
@@ -11,13 +9,13 @@ func (strategyFactory StrategyFactory) CreateStrategy(ext string) EliminationStr
 	switch ext {
 	case "sample":
 		{
-			log.Println("启动Sample 淘汰策略")
+			logrus.Info("启动Sample 淘汰策略")
 			return NewSampleStrategy()
 		}
 
 	case "lru":
 		{
-			log.Println("启动LRU淘汰策略")
+			logrus.Info("启动LRU淘汰策略")
 			return NewLRUCache()
 		}
 	}

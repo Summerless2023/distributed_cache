@@ -37,8 +37,8 @@ func NewEntry(key KeyType, value ValueType) *Entry {
 type StorageCache struct {
 	maxBytes  int64                     //最大内存占用
 	nbytes    int64                     //当前内存占用
-	CacheList *list.List                //存储缓存的链表
-	CacheMap  map[KeyType]*list.Element //key到list.Element的映射map
+	cacheList *list.List                //存储缓存的链表
+	cacheMap  map[KeyType]*list.Element //key到list.Element的映射map
 }
 
 func (storageCache *StorageCache) GetMaxBytes() int64 {
@@ -57,11 +57,19 @@ func (storageCache *StorageCache) SubBytes(bytesNum int64) {
 	storageCache.nbytes -= bytesNum
 }
 
+func (storageCache *StorageCache) GetCacheList() *list.List {
+	return storageCache.cacheList
+}
+
+func (storageCache *StorageCache) GetCacheMap() map[KeyType]*list.Element {
+	return storageCache.cacheMap
+}
+
 func NewStorageCache(maxBytes int64) *StorageCache {
 	return &StorageCache{
 		maxBytes:  maxBytes,
 		nbytes:    0,
-		CacheList: list.New(),
-		CacheMap:  make(map[KeyType]*list.Element),
+		cacheList: list.New(),
+		cacheMap:  make(map[KeyType]*list.Element),
 	}
 }

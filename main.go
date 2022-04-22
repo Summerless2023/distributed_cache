@@ -18,5 +18,5 @@ func main() {
 	for i := 0; i < 20; i++ {
 		mytest.Add(models.KeyType(strconv.Itoa(i)), models.ValueType(strconv.Itoa(i)))
 	}
-	utils.PrintList(*mytest.CacheList)
+	utils.PrintList(*mytest.GetCacheList())
 }

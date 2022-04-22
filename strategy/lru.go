@@ -16,8 +16,8 @@ type LRUCache struct {
 //根据key获取value
 func (lru *LRUCache) Get(key models.KeyType) (models.ValueType, bool) {
 	logrus.Debug("调用LRU的Get操作，key值为", key)
-	if element, ok := lru.CacheMap[key]; ok {
-		lru.CacheList.MoveToFront(element)
+	if element, ok := lru.GetCacheMap()[key]; ok {
+		lru.GetCacheList().MoveToFront(element)
 		kv := element.Value.(*models.Entry)
 		return kv.GetValue(), true
 	}
@@ -27,15 +27,15 @@ func (lru *LRUCache) Get(key models.KeyType) (models.ValueType, bool) {
 //根据key和value增加一个value，如果已经存在则更新value
 func (lru *LRUCache) Add(key models.KeyType, value models.ValueType) bool {
 	//如果值已经存在，则更新
-	if element, ok := lru.CacheMap[key]; ok {
-		lru.CacheList.MoveToFront(element)
+	if element, ok := lru.GetCacheMap()[key]; ok {
+		lru.GetCacheList().MoveToFront(element)
 		kv := element.Value.(*models.Entry)
 		kv.SetValue(value)
 		return true
 	} else { //否则直接增加
 		logrus.Debug("LRU Add (", key, ",", value, ")")
-		element := lru.CacheList.PushFront(models.NewEntry(key, value))
-		lru.CacheMap[key] = element
+		element := lru.GetCacheList().PushFront(models.NewEntry(key, value))
+		lru.GetCacheMap()[key] = element
 		var tmpBytes int64 = int64(len(key) + len(value))
 		for lru.GetNbytes()+tmpBytes > lru.GetMaxBytes() {
 			lru.Remove()
@@ -48,13 +48,13 @@ func (lru *LRUCache) Add(key models.KeyType, value models.ValueType) bool {
 //根据key删除对应的Entry
 func (lru *LRUCache) Remove() bool {
 	logrus.Debug("调用LRU的Remove方法")
-	element := lru.CacheList.Back()
+	element := lru.GetCacheList().Back()
 	if element != nil {
-		lru.CacheList.Remove(element)
+		lru.GetCacheList().Remove(element)
 		kv := element.Value.(*models.Entry)
 		var tmpBytes int64 = int64(len(kv.GetKey()) + len(kv.GetValue()))
 		lru.SubBytes(tmpBytes)
-		delete(lru.CacheMap, kv.GetKey())
+		delete(lru.GetCacheMap(), kv.GetKey())
 	}
 	return true
 }

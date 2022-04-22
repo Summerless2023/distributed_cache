@@ -17,6 +17,18 @@ type StorageCache struct {
 	CacheList *list.List //存储缓存的链表
 }
 
+func (storageCache *StorageCache) GetMaxBytes() int64 {
+	return storageCache.MaxBytes
+}
+
+func (storageCache *StorageCache) GetNbytes() int64 {
+	return storageCache.Nbytes
+}
+
+func (storageCache *StorageCache) AddBytes(bytesNum int64) {
+	storageCache.Nbytes += bytesNum
+}
+
 func NewStorageCache(maxBytes int64) *StorageCache {
 	return &StorageCache{
 		MaxBytes:  maxBytes,

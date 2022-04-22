@@ -29,6 +29,10 @@ func (storageCache *StorageCache) AddBytes(bytesNum int64) {
 	storageCache.Nbytes += bytesNum
 }
 
+func (storageCache *StorageCache) SubBytes(bytesNum int64) {
+	storageCache.Nbytes -= bytesNum
+}
+
 func NewStorageCache(maxBytes int64) *StorageCache {
 	return &StorageCache{
 		MaxBytes:  maxBytes,

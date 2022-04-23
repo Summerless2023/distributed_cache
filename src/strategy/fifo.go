@@ -2,7 +2,7 @@ package strategy
 
 import (
 	"main/conf"
-	"main/models"
+	"main/src/models"
 
 	"github.com/sirupsen/logrus"
 )

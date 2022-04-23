@@ -1,6 +1,6 @@
 package strategy
 
-import "main/models"
+import "main/src/models"
 
 type EliminationStrategy interface {
 

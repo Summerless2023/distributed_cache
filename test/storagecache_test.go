@@ -2,7 +2,7 @@ package test
 
 import (
 	"main/conf"
-	"main/models"
+	"main/src/models"
 	"testing"
 )
 

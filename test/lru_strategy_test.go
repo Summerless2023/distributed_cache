@@ -1,7 +1,7 @@
 package test
 
 import (
-	"main/strategy"
+	"main/src/strategy"
 	"testing"
 )
 

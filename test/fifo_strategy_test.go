@@ -1,9 +1,9 @@
 package test
 
 import (
-	"main/models"
-	"main/strategy"
-	"main/utils"
+	"main/src/models"
+	"main/src/strategy"
+	"main/src/utils"
 	"strconv"
 	"testing"
 

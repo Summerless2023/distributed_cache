@@ -8,21 +8,21 @@ import (
 )
 
 // FIFO cache 结构体
-type FIFOCache struct {
+type FIFOStrategy struct {
 	*models.StorageCache
 	// optional and executed when an entry is purged.
 	// OnEvicted func(key string, value Value)
 }
 
 // FIFO cache实例化函数
-func NewFIFOCache() *FIFOCache {
-	return &FIFOCache{
+func NewFIFOStrategy() *FIFOStrategy {
+	return &FIFOStrategy{
 		StorageCache: models.NewStorageCache(conf.Default_Max_Bytes),
 	}
 }
 
 // 根据key获取value
-func (fifo *FIFOCache) Get(key models.KeyType) (models.ValueType, bool) {
+func (fifo *FIFOStrategy) Get(key models.KeyType) (models.ValueType, bool) {
 	logrus.Debug("调用FIFO的Get操作，key值为", key)
 	if element, ok := fifo.GetCacheMap()[key]; ok {
 		// fifo.GetCacheList().MoveToFront(element)
@@ -33,7 +33,7 @@ func (fifo *FIFOCache) Get(key models.KeyType) (models.ValueType, bool) {
 }
 
 // 根据策略删除淘汰的Entry
-func (fifo *FIFOCache) Remove() bool {
+func (fifo *FIFOStrategy) Remove() bool {
 	logrus.Debug("调用FIFO的Remove方法")
 	element := fifo.GetCacheList().Front()
 	if element != nil {
@@ -47,7 +47,7 @@ func (fifo *FIFOCache) Remove() bool {
 }
 
 // 根据key和value增加一个value，如果已经存在则更新value
-func (fifo *FIFOCache) Add(key models.KeyType, value models.ValueType) bool {
+func (fifo *FIFOStrategy) Add(key models.KeyType, value models.ValueType) bool {
 	logrus.Debug("调用FIFO的Add方法")
 	// 如果值已存在，则更新
 	if element, ok := fifo.GetCacheMap()[key]; ok {

@@ -16,12 +16,12 @@ func (strategyFactory StrategyFactory) CreateStrategy(ext string) EliminationStr
 	case "lru":
 		{
 			logrus.Info("启动LRU淘汰策略")
-			return NewLRUCache()
+			return NewLRUStrategy()
 		}
 	case "fifo":
 		{
 			logrus.Info("启动FIFO淘汰策略")
-			return NewFIFOCache()
+			return NewFIFOStrategy()
 		}
 	}
 

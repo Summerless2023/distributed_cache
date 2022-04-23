@@ -14,8 +14,8 @@ import (
 
 func TestFIFO(t *testing.T) {
 	logrus.SetLevel(logrus.DebugLevel)
-	logrus.Info("FIFOCache")
-	fifotest := strategy.NewFIFOCache()
+	logrus.Info("FIFOStrategy")
+	fifotest := strategy.NewFIFOStrategy()
 	for i := 0; i < 20; i++ {
 		fifotest.Add(models.KeyType(strconv.Itoa(i)), models.ValueType(strconv.Itoa(i)))
 	}

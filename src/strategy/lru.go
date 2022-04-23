@@ -64,7 +64,7 @@ func (lru *LRUCache) Remove() bool {
 	return true
 }
 
-func NewLRUCache() *LRUCache {
+func NewLRUStrategy() *LRUCache {
 	return &LRUCache{
 		StorageCache: models.NewStorageCache(conf.Default_Max_Bytes),
 	}

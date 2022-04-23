@@ -32,7 +32,7 @@ func main() {
 	}
 	factory := new(strategy.StrategyFactory)
 	var mytest strategy.EliminationStrategy = factory.CreateStrategy(*ToUseStrategy)
-	// mytest := strategy.NewLRUCache()
+	// mytest := strategy.NewLRUStrategy()
 	for i := 0; i < 20; i++ {
 		mytest.Add(models.KeyType(strconv.Itoa(i)), models.ValueType(strconv.Itoa(i)))
 	}

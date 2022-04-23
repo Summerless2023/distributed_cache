@@ -7,14 +7,14 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type LRUCache struct {
+type LRUStrategy struct {
 	*models.StorageCache
 	// optional and executed when an entry is purged.
 	// OnEvicted func(key string, value Value)
 }
 
 //根据key获取value
-func (lru *LRUCache) Get(key models.KeyType) (models.ValueType, bool) {
+func (lru *LRUStrategy) Get(key models.KeyType) (models.ValueType, bool) {
 	logrus.Debug("调用LRU的Get操作，key值为", key)
 	if element, ok := lru.GetCacheMap()[key]; ok {
 		lru.GetCacheList().MoveToFront(element)
@@ -25,7 +25,7 @@ func (lru *LRUCache) Get(key models.KeyType) (models.ValueType, bool) {
 }
 
 //根据key和value增加一个value，如果已经存在则更新value
-func (lru *LRUCache) Add(key models.KeyType, value models.ValueType) bool {
+func (lru *LRUStrategy) Add(key models.KeyType, value models.ValueType) bool {
 	//如果值已经存在，则更新
 	if element, ok := lru.GetCacheMap()[key]; ok {
 		lru.GetCacheList().MoveToFront(element)
@@ -51,7 +51,7 @@ func (lru *LRUCache) Add(key models.KeyType, value models.ValueType) bool {
 }
 
 //根据key删除对应的Entry
-func (lru *LRUCache) Remove() bool {
+func (lru *LRUStrategy) Remove() bool {
 	logrus.Debug("调用LRU的Remove方法")
 	element := lru.GetCacheList().Back()
 	if element != nil {
@@ -64,8 +64,8 @@ func (lru *LRUCache) Remove() bool {
 	return true
 }
 
-func NewLRUStrategy() *LRUCache {
-	return &LRUCache{
+func NewLRUStrategy() *LRUStrategy {
+	return &LRUStrategy{
 		StorageCache: models.NewStorageCache(conf.Default_Max_Bytes),
 	}
 }

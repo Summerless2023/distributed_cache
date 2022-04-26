@@ -19,7 +19,7 @@ func TestFIFO(t *testing.T) {
 	for i := 0; i < 20; i++ {
 		fifotest.Add(models.KeyType(strconv.Itoa(i)), models.ValueType(strconv.Itoa(i)))
 	}
-	utils.PrintList(*fifotest.GetCacheList())
+	utils.PrintList(fifotest.GetCacheList())
 
 }
 

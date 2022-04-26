@@ -25,6 +25,15 @@ go test ./test/...
 `
 
 ## 环境变量
+
+`
+
 go mod init main
+
+go env -w GOPROXY=https://goproxy.cn,direct
+
 go env -w GO111MODULE="on"
+
 go run .
+
+`

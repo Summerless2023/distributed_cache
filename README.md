@@ -23,3 +23,8 @@
 `
 go test ./test/...
 `
+
+## 环境变量
+go mod init main
+go env -w GO111MODULE="on"
+go run .

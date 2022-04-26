@@ -1,14 +1,16 @@
 package main
 
 import (
+	"container/list"
 	"flag"
 	"main/conf"
 	"main/src/concurrency"
 	"main/src/models"
 	"main/src/strategy"
+	"main/src/utils"
+	"reflect"
 	"strconv"
 	"sync"
-	"time"
 
 	"github.com/sirupsen/logrus"
 )
@@ -36,7 +38,9 @@ func main() {
 	for i := 0; i < 20; i++ {
 		mytest.Add(models.KeyType(strconv.Itoa(i)), models.ValueType(strconv.Itoa(i)))
 	}
-	// utils.PrintList(*mytest.GetCacheList())
+	// fmt.Println()
+	value := reflect.ValueOf(mytest).MethodByName("GetCacheList").Call([]reflect.Value{})
+	utils.PrintList(value[0].Interface().(*list.List))
 	// // factory := new(strategy.StrategyFactory)
 	// // var mytest strategy.EliminationStrategy = factory.CreateStrategy("lru")
 	// mytest := strategy.NewFIFOStrategy()
@@ -44,21 +48,21 @@ func main() {
 	// 	mytest.Add(models.KeyType(strconv.Itoa(i)), models.ValueType(strconv.Itoa(i)))
 	// }
 	// utils.PrintList(*mytest.GetCacheList())
-	concurrencyCache := &concurrency.ConcurrencyCache{}
-	var waitGroup sync.WaitGroup
-	for i := 0; i < 1000; i++ {
-		waitGroup.Add(1)
-		go add(concurrencyCache, strconv.Itoa(i), strconv.Itoa(i), &waitGroup)
-	}
-	waitGroup.Wait()
-	time.Sleep(3 * time.Second)
-	// logrus.Info(concurrencyCache.Get(models.KeyType(strconv.Itoa(99))))
-	cnt := 0
-	for i := 0; i < 1000; i++ {
-		_, ok := concurrencyCache.Get(models.KeyType(strconv.Itoa(i)))
-		if ok {
-			cnt++
-		}
-	}
-	logrus.Debug(cnt)
+	// concurrencyCache := &concurrency.ConcurrencyCache{}
+	// var waitGroup sync.WaitGroup
+	// for i := 0; i < 1000; i++ {
+	// 	waitGroup.Add(1)
+	// 	go add(concurrencyCache, strconv.Itoa(i), strconv.Itoa(i), &waitGroup)
+	// }
+	// waitGroup.Wait()
+	// time.Sleep(3 * time.Second)
+	// // logrus.Info(concurrencyCache.Get(models.KeyType(strconv.Itoa(99))))
+	// cnt := 0
+	// for i := 0; i < 1000; i++ {
+	// 	_, ok := concurrencyCache.Get(models.KeyType(strconv.Itoa(i)))
+	// 	if ok {
+	// 		cnt++
+	// 	}
+	// }
+	// logrus.Debug(cnt)
 }

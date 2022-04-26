@@ -1,13 +1,13 @@
 package test
 
 import (
-	"main/src/strategy"
+	"main/src/strategies"
 	"testing"
 )
 
 func TestLRUStrategy(t *testing.T) {
-	factory := new(strategy.StrategyFactory)
-	var mytest strategy.EliminationStrategy = factory.CreateStrategy("lru")
+	factory := new(strategies.StrategyFactory)
+	var mytest strategies.EliminationStrategy = factory.CreateStrategy("lru")
 	mytest.Add("1", "1")
 	mytest.Add("2", "2")
 	mytest.Add("3", "3")
@@ -18,8 +18,8 @@ func TestLRUStrategy(t *testing.T) {
 }
 
 func TestLRUStrategy1(t *testing.T) {
-	factory := new(strategy.StrategyFactory)
-	var mytest strategy.EliminationStrategy = factory.CreateStrategy("lru")
+	factory := new(strategies.StrategyFactory)
+	var mytest strategies.EliminationStrategy = factory.CreateStrategy("lru")
 	mytest.Add("123", "123")
 	mytest.Add("123", "1")
 	value, ok := mytest.Get("123")

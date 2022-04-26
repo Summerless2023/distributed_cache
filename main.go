@@ -6,7 +6,7 @@ import (
 	"main/conf"
 	"main/src/concurrency"
 	"main/src/models"
-	"main/src/strategy"
+	"main/src/strategies"
 	"main/src/utils"
 	"reflect"
 	"strconv"
@@ -32,8 +32,8 @@ func main() {
 	if !conf.Strategy_Map[*ToUseStrategy] {
 		logrus.Fatal("不存在该策略：", *ToUseStrategy)
 	}
-	factory := new(strategy.StrategyFactory)
-	var mytest strategy.EliminationStrategy = factory.CreateStrategy(*ToUseStrategy)
+	factory := new(strategies.StrategyFactory)
+	var mytest strategies.EliminationStrategy = factory.CreateStrategy(*ToUseStrategy)
 	// mytest := strategy.NewLRUStrategy()
 	for i := 0; i < 20; i++ {
 		mytest.Add(models.KeyType(strconv.Itoa(i)), models.ValueType(strconv.Itoa(i)))

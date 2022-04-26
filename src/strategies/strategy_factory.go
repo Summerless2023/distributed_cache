@@ -1,4 +1,4 @@
-package strategy
+package strategies
 
 import "github.com/sirupsen/logrus"
 

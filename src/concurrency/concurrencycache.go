@@ -2,7 +2,7 @@ package concurrency
 
 import (
 	"main/src/models"
-	"main/src/strategy"
+	"main/src/strategies"
 	"sync"
 
 	"github.com/sirupsen/logrus"
@@ -10,10 +10,10 @@ import (
 
 type ConcurrencyCache struct {
 	lock  sync.Mutex
-	cache strategy.EliminationStrategy
+	cache strategies.EliminationStrategy
 }
 
-func (c *ConcurrencyCache) getCache() strategy.EliminationStrategy {
+func (c *ConcurrencyCache) getCache() strategies.EliminationStrategy {
 	return c.cache
 }
 
@@ -22,7 +22,7 @@ func (c *ConcurrencyCache) Add(key models.KeyType, value models.ValueType) bool 
 	c.lock.Lock()
 	defer c.lock.Unlock()
 	if c.cache == nil {
-		factory := new(strategy.StrategyFactory)
+		factory := new(strategies.StrategyFactory)
 		c.cache = factory.CreateStrategy("fifo")
 	}
 	c.getCache().Add(key, value)

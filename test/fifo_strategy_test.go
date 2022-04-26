@@ -2,7 +2,7 @@ package test
 
 import (
 	"main/src/models"
-	"main/src/strategy"
+	"main/src/strategies"
 	"main/src/utils"
 	"strconv"
 	"testing"
@@ -15,7 +15,7 @@ import (
 func TestFIFO(t *testing.T) {
 	logrus.SetLevel(logrus.DebugLevel)
 	logrus.Info("FIFOStrategy")
-	fifotest := strategy.NewFIFOStrategy()
+	fifotest := strategies.NewFIFOStrategy()
 	for i := 0; i < 20; i++ {
 		fifotest.Add(models.KeyType(strconv.Itoa(i)), models.ValueType(strconv.Itoa(i)))
 	}
@@ -24,8 +24,8 @@ func TestFIFO(t *testing.T) {
 }
 
 func TestFactoryFIFO(t *testing.T) {
-	factory := new(strategy.StrategyFactory)
-	var mytest strategy.EliminationStrategy = factory.CreateStrategy("fifo")
+	factory := new(strategies.StrategyFactory)
+	var mytest strategies.EliminationStrategy = factory.CreateStrategy("fifo")
 	mytest.Add("123", "123")
 	if _, ok := mytest.Get("123"); ok {
 		t.Log("测试成功")

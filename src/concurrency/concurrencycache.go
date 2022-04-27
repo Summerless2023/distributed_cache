@@ -44,3 +44,7 @@ func (c *ConcurrencyCache) Get(key models.KeyType) (value models.ValueType, ok b
 	logrus.Debug("Get 放锁" + key)
 	return "", false
 }
+
+func NewConcurrencyCache() *ConcurrencyCache {
+	return &ConcurrencyCache{}
+}

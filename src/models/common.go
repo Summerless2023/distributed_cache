@@ -73,3 +73,15 @@ func NewStorageCache(maxBytes int64) *StorageCache {
 		cacheMap:  make(map[KeyType]*list.Element),
 	}
 }
+
+type Getter interface {
+	Get(key KeyType) (ValueType, error)
+}
+
+// A GetterFunc implements Getter with a function.
+type GetterFunc func(key KeyType) (ValueType, error)
+
+// Get implements Getter interface function
+func (f GetterFunc) Get(key KeyType) (ValueType, error) {
+	return f(key)
+}

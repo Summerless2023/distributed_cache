@@ -27,6 +27,10 @@ func (entry *Entry) SetValue(value ValueType) {
 	entry.value = value
 }
 
+func (entry *Entry) GetEntryLen() int64 {
+	return int64(len(entry.key)) + int64(len(entry.value))
+}
+
 func NewEntry(key KeyType, value ValueType) *Entry {
 	return &Entry{
 		key:   key,
@@ -34,39 +38,39 @@ func NewEntry(key KeyType, value ValueType) *Entry {
 	}
 }
 
-type StorageCache struct {
+type CacheStorage struct {
 	maxBytes  int64                     //最大内存占用
 	nbytes    int64                     //当前内存占用
 	cacheList *list.List                //存储缓存的链表
 	cacheMap  map[KeyType]*list.Element //key到list.Element的映射map
 }
 
-func (storageCache *StorageCache) GetMaxBytes() int64 {
-	return storageCache.maxBytes
+func (cacheStorage *CacheStorage) GetMaxBytes() int64 {
+	return cacheStorage.maxBytes
 }
 
-func (storageCache *StorageCache) GetNbytes() int64 {
-	return storageCache.nbytes
+func (cacheStorage *CacheStorage) GetNbytes() int64 {
+	return cacheStorage.nbytes
 }
 
-func (storageCache *StorageCache) AddNBytes(bytesNum int64) {
-	storageCache.nbytes += bytesNum
+func (cacheStorage *CacheStorage) AddNBytes(bytesNum int64) {
+	cacheStorage.nbytes += bytesNum
 }
 
-func (storageCache *StorageCache) SubNBytes(bytesNum int64) {
-	storageCache.nbytes -= bytesNum
+func (cacheStorage *CacheStorage) SubNBytes(bytesNum int64) {
+	cacheStorage.nbytes -= bytesNum
 }
 
-func (storageCache *StorageCache) GetCacheList() *list.List {
-	return storageCache.cacheList
+func (cacheStorage *CacheStorage) GetCacheList() *list.List {
+	return cacheStorage.cacheList
 }
 
-func (storageCache *StorageCache) GetCacheMap() map[KeyType]*list.Element {
-	return storageCache.cacheMap
+func (cacheStorage *CacheStorage) GetCacheMap() map[KeyType]*list.Element {
+	return cacheStorage.cacheMap
 }
 
-func NewStorageCache(maxBytes int64) *StorageCache {
-	return &StorageCache{
+func NewCacheStorage(maxBytes int64) *CacheStorage {
+	return &CacheStorage{
 		maxBytes:  maxBytes,
 		nbytes:    0,
 		cacheList: list.New(),

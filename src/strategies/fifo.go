@@ -9,7 +9,7 @@ import (
 
 // FIFO cache 结构体
 type FIFOStrategy struct {
-	*models.StorageCache
+	*models.CacheStorage
 	// optional and executed when an entry is purged.
 	// OnEvicted func(key string, value Value)
 }
@@ -17,7 +17,7 @@ type FIFOStrategy struct {
 // FIFO cache实例化函数
 func NewFIFOStrategy() *FIFOStrategy {
 	return &FIFOStrategy{
-		StorageCache: models.NewStorageCache(conf.Default_Max_Bytes),
+		CacheStorage: models.NewCacheStorage(conf.Default_Max_Bytes),
 	}
 }
 

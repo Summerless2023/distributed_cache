@@ -8,7 +8,7 @@ import (
 )
 
 type LRUStrategy struct {
-	*models.StorageCache
+	*models.CacheStorage
 	// optional and executed when an entry is purged.
 	// OnEvicted func(key string, value Value)
 }
@@ -66,6 +66,6 @@ func (lru *LRUStrategy) Remove() bool {
 
 func NewLRUStrategy() *LRUStrategy {
 	return &LRUStrategy{
-		StorageCache: models.NewStorageCache(conf.Default_Max_Bytes),
+		CacheStorage: models.NewCacheStorage(conf.Default_Max_Bytes),
 	}
 }

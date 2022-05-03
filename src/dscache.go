@@ -20,28 +20,6 @@ var (
 	DSCachesMap = make(map[string]*DSCache) //保存所有缓存的map，key是缓存名称，value是DSCache指针
 )
 
-func NewDSCache(name string, getter models.Getter) *DSCache {
-	if getter == nil {
-		panic("nil Getter")
-	}
-	mu.Lock()
-	defer mu.Unlock()
-	g := &DSCache{
-		name:      name,
-		mainCache: *concurrency.NewConcurrencyCache(),
-		getter:    getter,
-	}
-	DSCachesMap[name] = g
-	return g
-}
-
-func GetDSCache(name string) *DSCache {
-	mu.RLock()
-	g := DSCachesMap[name]
-	mu.RUnlock()
-	return g
-}
-
 func (g *DSCache) Get(key string) (string, error) {
 	if key == "" {
 		return "", fmt.Errorf("key is required")
@@ -71,4 +49,26 @@ func (g *DSCache) getLocally(key string) (string, error) {
 
 func (g *DSCache) populateCache(key string, value string) {
 	g.mainCache.Add(models.KeyType(key), models.ValueType(value))
+}
+
+func NewDSCache(name string, getter models.Getter) *DSCache {
+	if getter == nil {
+		panic("nil Getter")
+	}
+	mu.Lock()
+	defer mu.Unlock()
+	g := &DSCache{
+		name:      name,
+		mainCache: *concurrency.NewConcurrencyCache(),
+		getter:    getter,
+	}
+	DSCachesMap[name] = g
+	return g
+}
+
+func GetDSCache(name string) *DSCache {
+	mu.RLock()
+	g := DSCachesMap[name]
+	mu.RUnlock()
+	return g
 }

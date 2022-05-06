@@ -39,6 +39,7 @@ func (lru *LRUStrategy) Add(key models.KeyType, value models.ValueType) bool {
 		return true
 	} else { //否则直接增加
 		logrus.Debug("LRU Add (", key, ",", value, ")")
+
 		element := lru.GetCacheList().PushFront(models.NewEntry(key, value))
 		lru.GetCacheMap()[key] = element
 		var tmpBytes int64 = int64(len(key) + len(value))

@@ -23,6 +23,13 @@ func (strategyFactory StrategyFactory) CreateStrategy(ext string) EliminationStr
 			logrus.Info("启动FIFO淘汰策略")
 			return NewFIFOStrategy()
 		}
+	case "lfu":
+		{
+
+			logrus.Info("启动LFU淘汰策略")
+			return NewLFUStrategy()
+
+		}
 	}
 
 	return nil

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"main/conf"
 	"net/http"
 
 	"github.com/sirupsen/logrus"
@@ -14,8 +16,11 @@ func (h *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	var s server
-	http.ListenAndServe("localhost:9999", &s)
+	conf.LoadConfig()                  //进行配置信息的加载
+	fmt.Println(conf.Config.Max_Bytes) //在conf中定义全局变量，其他包进行引用
+	fmt.Println(conf.Config.Strategy)  //在conf中定义全局变量，其他包进行引用
+	//var s server
+	//http.ListenAndServe("localhost:9999", &s)
 }
 
 // func add(concurrencyCache *concurrency.ConcurrencyCache, key string, value string, wg *sync.WaitGroup) {

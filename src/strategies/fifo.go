@@ -47,7 +47,7 @@ func (fifo *FIFOStrategy) Remove() bool {
 }
 
 // 根据key和value增加一个value，如果已经存在则更新value
-func (fifo *FIFOStrategy) Add(key models.KeyType, value models.ValueType) bool {
+func (fifo *FIFOStrategy) Add(key models.KeyType, value models.ValueType, expiredTime int64) bool {
 	logrus.Debug("调用FIFO的Add方法")
 	// 如果值已存在，则更新
 	if element, ok := fifo.GetCacheMap()[key]; ok {
@@ -57,6 +57,7 @@ func (fifo *FIFOStrategy) Add(key models.KeyType, value models.ValueType) bool {
 		for fifo.GetNbytes()+tmpBytes > fifo.GetMaxBytes() {
 			fifo.Remove()
 		}
+		fifo.GetExpiredTimeMap()[key] = expiredTime
 		kv.SetValue(value)
 		fifo.AddNBytes(tmpBytes)
 		return true
@@ -64,6 +65,7 @@ func (fifo *FIFOStrategy) Add(key models.KeyType, value models.ValueType) bool {
 		logrus.Debug("key不存在，增加kv")
 		element := fifo.GetCacheList().PushBack(models.NewEntry(key, value))
 		fifo.GetCacheMap()[key] = element
+		fifo.GetExpiredTimeMap()[key] = expiredTime
 		var tmpBytes int64 = int64(len(key) + len(value))
 		for fifo.GetNbytes()+tmpBytes > fifo.GetMaxBytes() {
 			fifo.Remove()

@@ -17,7 +17,7 @@ func (c *ConcurrencyCache) getCache() strategies.EliminationStrategy {
 	return c.cache
 }
 
-func (c *ConcurrencyCache) Add(key models.KeyType, value models.ValueType) bool {
+func (c *ConcurrencyCache) Add(key models.KeyType, value models.ValueType, expiredTime int64) bool {
 	logrus.Debug("Add 加锁 " + key)
 	c.lock.Lock()
 	defer c.lock.Unlock()
@@ -25,7 +25,7 @@ func (c *ConcurrencyCache) Add(key models.KeyType, value models.ValueType) bool 
 		factory := new(strategies.StrategyFactory)
 		c.cache = factory.CreateStrategy("fifo")
 	}
-	c.getCache().Add(key, value)
+	c.getCache().Add(key, value, expiredTime)
 	logrus.Debug("Add 放锁" + key)
 	return true
 }

@@ -1,12 +1,10 @@
 package test
 
 import (
-	"main/src/models"
 	"main/src/strategies"
 
 	//"main/src/utils"
 	"fmt"
-	"strconv"
 	"testing"
 
 	"github.com/sirupsen/logrus"
@@ -18,12 +16,12 @@ func TestLFU(t *testing.T) {
 	lfutest := strategies.NewLFUStrategy()
 	for j := 0; j < 3; j++ {
 		for i := 5; i < 10; i++ {
-			lfutest.Add(models.KeyType(strconv.Itoa(i)), models.ValueType(strconv.Itoa(2*i)))
+			// lfutest.Add(models.KeyType(strconv.Itoa(i)), models.ValueType(strconv.Itoa(2*i)))
 		}
 	}
 
 	for i := 5; i < 15; i++ {
-		lfutest.Add(models.KeyType(strconv.Itoa(i)), models.ValueType(strconv.Itoa(3*i)))
+		// lfutest.Add(models.KeyType(strconv.Itoa(i)), models.ValueType(strconv.Itoa(3*i)))
 	}
 	logrus.Debug("打印当前缓存中频率对应元素")
 	for _, value := range lfutest.GetCacheMap() {
@@ -37,7 +35,7 @@ func TestLFU(t *testing.T) {
 func TestFactoryLFU(t *testing.T) {
 	factory := new(strategies.StrategyFactory)
 	var lfutest strategies.EliminationStrategy = factory.CreateStrategy("lfu")
-	lfutest.Add("123", "123")
+	// lfutest.Add("123", "123")
 	if _, ok := lfutest.Get("123"); ok {
 		t.Log("测试成功")
 	} else {

@@ -6,11 +6,11 @@ import (
 )
 
 func TestLRUStrategy(t *testing.T) {
-	factory := new(strategies.StrategyFactory)
-	var mytest strategies.EliminationStrategy = factory.CreateStrategy("lru")
-	mytest.Add("1", "1")
-	mytest.Add("2", "2")
-	mytest.Add("3", "3")
+	// factory := new(strategies.StrategyFactory)
+	// var mytest strategies.EliminationStrategy = factory.CreateStrategy("lru")
+	// mytest.Add("1", "1")
+	// mytest.Add("2", "2")
+	// mytest.Add("3", "3")
 	// for i := mytest.CacheList.Front(); i != nil; i = mytest.CacheList.Next() {
 	// 	t.Log(i.Value)
 	// }
@@ -20,8 +20,8 @@ func TestLRUStrategy(t *testing.T) {
 func TestLRUStrategy1(t *testing.T) {
 	factory := new(strategies.StrategyFactory)
 	var mytest strategies.EliminationStrategy = factory.CreateStrategy("lru")
-	mytest.Add("123", "123")
-	mytest.Add("123", "1")
+	// mytest.Add("123", "123")
+	// mytest.Add("123", "1")
 	value, ok := mytest.Get("123")
 	if ok && value == "1" {
 		t.Log("测试成功")

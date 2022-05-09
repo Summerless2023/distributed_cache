@@ -9,7 +9,7 @@ import (
 )
 
 func add(concurrencyCache *concurrency.ConcurrencyCache, key string, value string, wg *sync.WaitGroup) {
-	concurrencyCache.Add(models.KeyType(key), models.ValueType(value))
+	// concurrencyCache.Add(models.KeyType(key), models.ValueType(value))
 	wg.Done()
 }
 

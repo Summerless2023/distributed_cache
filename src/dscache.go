@@ -43,12 +43,12 @@ func (g *DSCache) getLocally(key string) (string, error) {
 		return "", err
 
 	}
-	g.populateCache(key, string(value))
+	// g.populateCache(key, string(value))
 	return string(value), nil
 }
 
-func (g *DSCache) populateCache(key string, value string) {
-	g.mainCache.Add(models.KeyType(key), models.ValueType(value))
+func (g *DSCache) populateCache(key string, value string, expiredTime int64) {
+	g.mainCache.Add(models.KeyType(key), models.ValueType(value), expiredTime)
 }
 
 func NewDSCache(name string, getter models.Getter) *DSCache {

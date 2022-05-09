@@ -25,11 +25,12 @@ func (lru *LRUStrategy) Get(key models.KeyType) (models.ValueType, bool) {
 }
 
 //根据key和value增加一个value，如果已经存在则更新value
-func (lru *LRUStrategy) Add(key models.KeyType, value models.ValueType) bool {
+func (lru *LRUStrategy) Add(key models.KeyType, value models.ValueType, expiredTime int64) bool {
 	//如果值已经存在，则更新
 	if element, ok := lru.GetCacheMap()[key]; ok {
 		lru.GetCacheList().MoveToFront(element)
 		kv := element.Value.(*models.Entry)
+		lru.GetExpiredTimeMap()[key] = expiredTime
 		var tmpBytes int64 = int64(len(kv.GetValue())) - int64(len(value)) //如果值为正，则表示占用byte增加，值为负则表示占用减少
 		kv.SetValue(value)
 		for lru.GetNbytes()+tmpBytes > lru.GetMaxBytes() {
@@ -42,6 +43,7 @@ func (lru *LRUStrategy) Add(key models.KeyType, value models.ValueType) bool {
 
 		element := lru.GetCacheList().PushFront(models.NewEntry(key, value))
 		lru.GetCacheMap()[key] = element
+		lru.GetExpiredTimeMap()[key] = expiredTime
 		var tmpBytes int64 = int64(len(key) + len(value))
 		for lru.GetNbytes()+tmpBytes > lru.GetMaxBytes() {
 			lru.Remove()

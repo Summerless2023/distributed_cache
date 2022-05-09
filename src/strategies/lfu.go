@@ -84,12 +84,13 @@ func (lfu *LFUStrategy) Remove() bool {
 	return true
 }
 
-func (lfu *LFUStrategy) Add(key models.KeyType, value models.ValueType) bool {
+func (lfu *LFUStrategy) Add(key models.KeyType, value models.ValueType, expiredTime int64) bool {
 	//如果值已存在
 	if element, ok := lfu.GetCacheMap()[key]; ok {
 		//更新频率
 		logrus.Debug("key存在 LFU更新频率 ")
 		kv := element.Value.(*LFUEntry)
+		lfu.GetExpiredTimeMap()[key] = expiredTime
 		lfu.FreqInc(*kv)
 		//检查内存容量是否可用
 		var tmpBytes int64 = int64(len(kv.GetValue())) - int64(len(value)) //如果值为正，则表示占用byte增加，值为负则表示占用减少
@@ -123,6 +124,7 @@ func (lfu *LFUStrategy) Add(key models.KeyType, value models.ValueType) bool {
 		var ele = listnow.PushBack(NewLFUEntry(key, value, 1)) //问题
 		//logrus.Debug("将元素存入cacheMap")
 		lfu.GetCacheMap()[key] = ele
+		lfu.GetExpiredTimeMap()[key] = expiredTime
 		//更新最小频率
 		//logrus.Debug("更新minFreq")
 		lfu.SetMinFreq(1)

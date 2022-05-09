@@ -10,7 +10,7 @@ func (sampleStrategy SampleStrategy) Get(key models.KeyType) (models.ValueType, 
 	return sampleStrategy.cache[key], true
 }
 
-func (sampleStrategy SampleStrategy) Add(key models.KeyType, value models.ValueType) bool {
+func (sampleStrategy SampleStrategy) Add(key models.KeyType, value models.ValueType, expiredTime int64) bool {
 	sampleStrategy.cache[key] = value
 	return true
 }

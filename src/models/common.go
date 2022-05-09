@@ -1,6 +1,10 @@
 package models
 
-import "container/list"
+import (
+	"container/list"
+	"errors"
+	"time"
+)
 
 type KeyType string   //cache的key值类型
 type ValueType string //cache的value值类型
@@ -39,10 +43,11 @@ func NewEntry(key KeyType, value ValueType) *Entry {
 }
 
 type CacheStorage struct {
-	maxBytes  int64                     //最大内存占用
-	nbytes    int64                     //当前内存占用
-	cacheList *list.List                //存储缓存的链表
-	cacheMap  map[KeyType]*list.Element //key到list.Element的映射map
+	maxBytes       int64                     //最大内存占用
+	nbytes         int64                     //当前内存占用
+	cacheList      *list.List                //存储缓存的链表
+	cacheMap       map[KeyType]*list.Element //key到list.Element的映射map
+	expiredTimeMap map[KeyType]int64         //key到过期时间的映射map
 }
 
 func (cacheStorage *CacheStorage) GetMaxBytes() int64 {
@@ -69,12 +74,36 @@ func (cacheStorage *CacheStorage) GetCacheMap() map[KeyType]*list.Element {
 	return cacheStorage.cacheMap
 }
 
+func (cacheStorage *CacheStorage) GetExpiredTimeMap() map[KeyType]int64 {
+	return cacheStorage.expiredTimeMap
+}
+
+func (cacheStorage *CacheStorage) GetExpiredTime(key KeyType) (int64, bool) {
+	if element, ok := cacheStorage.GetExpiredTimeMap()[key]; ok {
+		return element, true
+	}
+	return 0, false
+}
+
+//判断key是否过期，如果过期则返回(true，nil)，没有过期返回(false,nil),否则返回(false，error)
+func (cacheStorage *CacheStorage) JudgeKeyExpired(key KeyType) (bool, error) {
+	if expiredTime, ok := cacheStorage.GetExpiredTime(key); ok {
+		if expiredTime > int64(time.Now().UnixNano()) {
+			return true, nil
+		} else {
+			return false, nil
+		}
+	}
+	return false, errors.New("key is not in expiredTimeMap")
+}
+
 func NewCacheStorage(maxBytes int64) *CacheStorage {
 	return &CacheStorage{
-		maxBytes:  maxBytes,
-		nbytes:    0,
-		cacheList: list.New(),
-		cacheMap:  make(map[KeyType]*list.Element),
+		maxBytes:       maxBytes,
+		nbytes:         0,
+		cacheList:      list.New(),
+		cacheMap:       make(map[KeyType]*list.Element),
+		expiredTimeMap: make(map[KeyType]int64),
 	}
 }
 

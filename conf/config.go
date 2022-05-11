@@ -1,13 +1,16 @@
 package conf
 
 import (
-	"github.com/go-ini/ini"
 	"sync"
+
+	"github.com/go-ini/ini"
 )
 
 type ConfigStruct struct {
-	Max_Bytes int64  `ini:"max_bytes"`
-	Strategy  string `ini:"strategy"`
+	Max_Bytes   int64  `ini:"Max_Bytes"`
+	Strategy    string `ini:"Strategy"`
+	UpdateTime  int64  `ini:"UpdateTime"`
+	ExpiredTime int64  `ini:"ExpiredTime"`
 }
 
 var Config = &ConfigStruct{} //定义存储配置信息的全局变量

@@ -4,6 +4,8 @@ import (
 	"container/list"
 	"errors"
 	"time"
+
+	"github.com/sirupsen/logrus"
 )
 
 type KeyType string   //cache的key值类型
@@ -95,6 +97,40 @@ func (cacheStorage *CacheStorage) JudgeKeyExpired(key KeyType) (bool, error) {
 		}
 	}
 	return false, errors.New("key is not in expiredTimeMap")
+}
+
+func (cacheStorage *CacheStorage) RemoveExpiredTimeKey() {
+
+	logrus.Info("current time: ", time.Now().UnixNano(), "执行一次定期删除")
+	//任务B
+	for i := cacheStorage.cacheList.Front(); i != nil; {
+		kv := i.Value.(*Entry)
+		//logrus.Info(kv.GetKey())
+		isExpired, _ := cacheStorage.JudgeKeyExpired(kv.GetKey())
+		//logrus.Info(isExpired)
+		//logrus.Info(cacheStorage.expiredTimeMap[kv.GetKey()])
+		j := i
+		i = i.Next()
+		if isExpired {
+			//从list,cacheMap,expiredTimeMap中移除
+			logrus.Info("移除Element,expiredTime:")
+			logrus.Info(kv.GetKey(), "--", cacheStorage.expiredTimeMap[kv.GetKey()])
+
+			logrus.Info("remove -element", j.Value.(*Entry).GetKey())
+			cacheStorage.cacheList.Remove(j)
+			delete(cacheStorage.cacheMap, kv.GetKey())
+			delete(cacheStorage.expiredTimeMap, kv.key)
+			//修改内存容量
+			var tmpBytes int64 = int64(len(kv.GetKey()) + len(kv.GetValue()))
+			cacheStorage.AddNBytes(tmpBytes)
+		}
+	}
+	logrus.Info("剩余Element expiredTime ")
+	for i := cacheStorage.cacheList.Front(); i != nil; i = i.Next() {
+		kv := i.Value.(*Entry)
+		logrus.Info(kv.GetKey(), "--", cacheStorage.expiredTimeMap[kv.GetKey()])
+	}
+
 }
 
 func NewCacheStorage(maxBytes int64) *CacheStorage {

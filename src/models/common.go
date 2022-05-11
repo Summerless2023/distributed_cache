@@ -3,6 +3,7 @@ package models
 import (
 	"container/list"
 	"errors"
+	"fmt"
 	"time"
 )
 
@@ -88,13 +89,41 @@ func (cacheStorage *CacheStorage) GetExpiredTime(key KeyType) (int64, bool) {
 //判断key是否过期，如果过期则返回(true，nil)，没有过期返回(false,nil),否则返回(false，error)
 func (cacheStorage *CacheStorage) JudgeKeyExpired(key KeyType) (bool, error) {
 	if expiredTime, ok := cacheStorage.GetExpiredTime(key); ok {
-		if expiredTime > int64(time.Now().UnixNano()) {
+		if expiredTime < int64(time.Now().UnixNano()) {
 			return true, nil
 		} else {
 			return false, nil
 		}
 	}
 	return false, errors.New("key is not in expiredTimeMap")
+}
+
+func (cacheStorage *CacheStorage) RemoveExpiredTimeKey() {
+
+	fmt.Println(time.Now().UnixNano())
+	//任务B
+	for i := cacheStorage.cacheList.Front(); i != nil; i = i.Next() {
+		kv := i.Value.(*Entry)
+		isExpired, _ := cacheStorage.JudgeKeyExpired(kv.GetKey())
+		//fmt.Println("Element = ", kv.GetKey(), kv.GetValue(), cacheStorage.expiredTimeMap[kv.GetKey()])
+		if isExpired {
+			//从list,cacheMap,expiredTimeMap中移除
+			fmt.Println("移除Element = ", kv.GetKey(), kv.GetValue(), cacheStorage.expiredTimeMap[kv.GetKey()])
+			cacheStorage.cacheList.Remove(i)
+			delete(cacheStorage.cacheMap, kv.GetKey())
+			delete(cacheStorage.expiredTimeMap, kv.key)
+			//修改内存容量
+			var tmpBytes int64 = int64(len(kv.GetKey()) + len(kv.GetValue()))
+			cacheStorage.SubNBytes(tmpBytes)
+		}
+
+	}
+
+	for i := cacheStorage.cacheList.Front(); i != nil; i = i.Next() {
+		kv := i.Value.(*Entry)
+		fmt.Println("剩余Element = ", kv.GetKey(), kv.GetValue(), cacheStorage.expiredTimeMap[kv.GetKey()])
+	}
+
 }
 
 func NewCacheStorage(maxBytes int64) *CacheStorage {

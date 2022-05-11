@@ -9,4 +9,7 @@ type EliminationStrategy interface {
 
 	// Get look ups a key's value
 	Get(key models.KeyType) (models.ValueType, bool)
+
+	//Remove a key's value
+	RemoveKey(key models.KeyType) bool
 }

@@ -17,7 +17,7 @@ type FIFOStrategy struct {
 // FIFO cache实例化函数
 func NewFIFOStrategy() *FIFOStrategy {
 	return &FIFOStrategy{
-		CacheStorage: models.NewCacheStorage(conf.Default_Max_Bytes),
+		CacheStorage: models.NewCacheStorage(conf.DEFAULT_MAX_BYTES),
 	}
 }
 
@@ -27,9 +27,34 @@ func (fifo *FIFOStrategy) Get(key models.KeyType) (models.ValueType, bool) {
 	if element, ok := fifo.GetCacheMap()[key]; ok {
 		// fifo.GetCacheList().MoveToFront(element)
 		kv := element.Value.(*models.Entry)
-		return kv.GetValue(), true
+		var err error
+		ok, err = fifo.JudgeKeyExpired(key)
+		if err != nil { //该键不存在
+			return "", false
+		}
+		if ok { //过期
+			return "", false
+		} else { //没过期
+			return kv.GetValue(), true
+		}
 	}
+	//查询到键不存在
 	return "", false
+}
+
+//删除一个特定的键值对
+func (fifo *FIFOStrategy) RemoveKey(key models.KeyType) bool {
+	logrus.Debug("调用FIFO的RemoveKey方法")
+	element, _ := fifo.GetCacheMap()[key]
+	if element != nil {
+		fifo.GetCacheList().Remove(element)
+		kv := element.Value.(*models.Entry)
+		var tmpBytes int64 = int64(len(kv.GetKey()) + len(kv.GetValue()))
+		fifo.SubNBytes(tmpBytes)
+		delete(fifo.GetCacheMap(), kv.GetKey())
+		delete(fifo.GetExpiredTimeMap(), kv.GetKey())
+	}
+	return true
 }
 
 // 根据策略删除淘汰的Entry

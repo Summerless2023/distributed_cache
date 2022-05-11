@@ -19,8 +19,18 @@ func (lru *LRUStrategy) Get(key models.KeyType) (models.ValueType, bool) {
 	if element, ok := lru.GetCacheMap()[key]; ok {
 		lru.GetCacheList().MoveToFront(element)
 		kv := element.Value.(*models.Entry)
-		return kv.GetValue(), true
+		var err error
+		ok, err = lru.JudgeKeyExpired(key)
+		if err != nil { //该键不存在
+			return "", false
+		}
+		if ok { //过期
+			return "", false
+		} else { //没过期
+			return kv.GetValue(), true
+		}
 	}
+	//查询到键不存在
 	return "", false
 }
 
@@ -53,6 +63,21 @@ func (lru *LRUStrategy) Add(key models.KeyType, value models.ValueType, expiredT
 	}
 }
 
+//删除一个特定的键值对
+func (lru *LRUStrategy) RemoveKey(key models.KeyType) bool {
+	logrus.Debug("调用LRU的RemoveKey方法")
+	element, _ := lru.GetCacheMap()[key]
+	if element != nil {
+		lru.GetCacheList().Remove(element)
+		kv := element.Value.(*models.Entry)
+		var tmpBytes int64 = int64(len(kv.GetKey()) + len(kv.GetValue()))
+		lru.SubNBytes(tmpBytes)
+		delete(lru.GetCacheMap(), kv.GetKey())
+		delete(lru.GetExpiredTimeMap(), kv.GetKey())
+	}
+	return true
+}
+
 //根据key删除对应的Entry
 func (lru *LRUStrategy) Remove() bool {
 	logrus.Debug("调用LRU的Remove方法")
@@ -69,6 +94,6 @@ func (lru *LRUStrategy) Remove() bool {
 
 func NewLRUStrategy() *LRUStrategy {
 	return &LRUStrategy{
-		CacheStorage: models.NewCacheStorage(conf.Default_Max_Bytes),
+		CacheStorage: models.NewCacheStorage(conf.DEFAULT_MAX_BYTES),
 	}
 }

@@ -88,7 +88,7 @@ func (cacheStorage *CacheStorage) GetExpiredTime(key KeyType) (int64, bool) {
 //判断key是否过期，如果过期则返回(true，nil)，没有过期返回(false,nil),否则返回(false，error)
 func (cacheStorage *CacheStorage) JudgeKeyExpired(key KeyType) (bool, error) {
 	if expiredTime, ok := cacheStorage.GetExpiredTime(key); ok {
-		if expiredTime > int64(time.Now().UnixNano()) {
+		if expiredTime < int64(time.Now().UnixNano()) {
 			return true, nil
 		} else {
 			return false, nil

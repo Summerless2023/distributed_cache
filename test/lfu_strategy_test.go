@@ -40,7 +40,7 @@ func TestLFU(t *testing.T) {
 func TestFactoryLFU(t *testing.T) {
 	factory := new(strategies.StrategyFactory)
 	var lfutest strategies.EliminationStrategy = factory.CreateStrategy("lfu")
-	lfutest.Add("123", "123", conf.Config.ExpiredTime)
+	lfutest.Add("123", "123", 100)
 	if _, ok := lfutest.Get("123"); ok {
 		t.Log("测试成功")
 	} else {

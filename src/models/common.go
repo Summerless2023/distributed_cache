@@ -105,7 +105,8 @@ func (cacheStorage *CacheStorage) RemoveExpiredTimeKey() {
 	for i := cacheStorage.cacheList.Front(); i != nil; i = i.Next() {
 		kv := i.Value.(*Entry)
 		isExpired, _ := cacheStorage.JudgeKeyExpired(kv.GetKey())
-		//fmt.Println("Element = ", kv.GetKey(), kv.GetValue(), cacheStorage.expiredTimeMap[kv.GetKey()])
+		fmt.Println(isExpired)
+		fmt.Println("Element = ", kv.GetKey(), kv.GetValue(), cacheStorage.expiredTimeMap[kv.GetKey()])
 		if isExpired {
 			//从list,cacheMap,expiredTimeMap中移除
 			fmt.Println("移除Element = ", kv.GetKey(), kv.GetValue(), cacheStorage.expiredTimeMap[kv.GetKey()])
@@ -115,6 +116,8 @@ func (cacheStorage *CacheStorage) RemoveExpiredTimeKey() {
 			//修改内存容量
 			var tmpBytes int64 = int64(len(kv.GetKey()) + len(kv.GetValue()))
 			cacheStorage.AddNBytes(tmpBytes)
+		} else {
+			fmt.Println("未过期Element", kv.GetKey(), cacheStorage.expiredTimeMap[kv.GetKey()])
 		}
 	}
 

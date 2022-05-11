@@ -30,8 +30,8 @@ func main() {
 	var ch chan int
 	ticker := time.NewTicker(time.Second * time.Duration(conf.Config.UpdateTime))
 	lru := strategies.NewLRUStrategy()
-	for i := 0; i < 20; i++ {
-		lru.Add(models.KeyType(strconv.Itoa(i)), models.ValueType(strconv.Itoa(i)), time.Now().UnixNano()+1000000000*int64(i))
+	for i := 0; i < 10; i++ {
+		lru.Add(models.KeyType(strconv.Itoa(i)), models.ValueType(strconv.Itoa(i)), time.Now().UnixNano()+10000000*int64(i))
 	}
 	utils.PrintList(lru.GetCacheList())
 	go func() {

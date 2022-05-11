@@ -28,6 +28,7 @@ func TestFIFO(t *testing.T) {
 }
 
 func TestFactoryFIFO(t *testing.T) {
+	
 	factory := new(strategies.StrategyFactory)
 	var mytest strategies.EliminationStrategy = factory.CreateStrategy("fifo")
 	mytest.Add("123", "123", conf.Config.ExpiredTime)

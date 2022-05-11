@@ -7,7 +7,7 @@ import (
 )
 
 func Test1(t *testing.T) {
-	sc := models.NewCacheStorage(conf.Default_Max_Bytes)
+	sc := models.NewCacheStorage(conf.DEFAULT_MAX_BYTES)
 	t.Log(sc.GetMaxBytes())
 	t.Log(sc.GetNbytes())
 	sc.AddNBytes(100)

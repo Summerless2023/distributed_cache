@@ -23,7 +23,7 @@ func (c *ConcurrencyCache) Add(key models.KeyType, value models.ValueType, expir
 	defer c.lock.Unlock()
 	if c.cache == nil {
 		factory := new(strategies.StrategyFactory)
-		c.cache = factory.CreateStrategy("fifo")
+		c.cache = factory.CreateStrategy("lru")
 	}
 	c.getCache().Add(key, value, expiredTime)
 	logrus.Debug("Add 放锁" + key)
@@ -42,12 +42,8 @@ func (c *ConcurrencyCache) Get(key models.KeyType) (value models.ValueType, ok b
 	val, ok := c.getCache().Get(key)
 	if ok { //查询到键且不过期
 		return val, true
-	} else {
-		if val == "" { //键不存在，返回空
-			return "", false
-		} else { //键存在，过期，删除
-			c.getCache().RemoveKey(key)
-		}
+	} else { //查询到不存在或者过期
+		c.getCache().RemoveKey(key)
 	}
 	logrus.Debug("Get 放锁" + key)
 	return "", false

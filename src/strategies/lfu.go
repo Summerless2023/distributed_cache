@@ -56,11 +56,12 @@ func (lfu *LFUStrategy) Get(key models.KeyType) (models.ValueType, bool) {
 			return "", false
 		}
 		if ok { //过期
-			return kv.GetValue(), false
+			return "", false
 		} else { //没过期
 			return kv.GetValue(), true
 		}
 	}
+	//查询到键不存在
 	return "", false
 }
 

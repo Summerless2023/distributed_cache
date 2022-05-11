@@ -16,14 +16,14 @@ var once sync.Once
 func LoadConfig() {
 	once.Do(func() {
 
-		errConf := ini.MapTo(Config, "./conf/conf.ini") //先读第一个文件
-		if errConf == nil {
+		errConfMsg := ini.MapTo(Config, "./conf/conf.ini") //先读第一个文件
+		if errConfMsg == nil {
 			CheckParameter()
 		}
 
 		var ConfigBack = &ConfigStruct{}
-		errBack := ini.MapTo(ConfigBack, "./conf/back_conf.ini") //再读第二个文件
-		if errBack == nil {
+		errBackMsg := ini.MapTo(ConfigBack, "./conf/back_conf.ini") //再读第二个文件
+		if errBackMsg == nil {
 			ModifyParameter(ConfigBack)
 			CheckParameter()
 		}

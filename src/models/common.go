@@ -114,9 +114,8 @@ func (cacheStorage *CacheStorage) RemoveExpiredTimeKey() {
 			delete(cacheStorage.expiredTimeMap, kv.key)
 			//修改内存容量
 			var tmpBytes int64 = int64(len(kv.GetKey()) + len(kv.GetValue()))
-			cacheStorage.SubNBytes(tmpBytes)
+			cacheStorage.AddNBytes(tmpBytes)
 		}
-
 	}
 
 	for i := cacheStorage.cacheList.Front(); i != nil; i = i.Next() {

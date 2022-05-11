@@ -34,12 +34,20 @@ func (c *ConcurrencyCache) Get(key models.KeyType) (value models.ValueType, ok b
 	logrus.Debug("Get 加锁" + key)
 	c.lock.Lock()
 	defer c.lock.Unlock()
+
 	if c.getCache() == nil {
 		return "", false
 	}
 
-	if v, ok := c.getCache().Get(key); ok {
-		return v, ok
+	val, ok := c.getCache().Get(key)
+	if ok { //查询到键且不过期
+		return val, true
+	} else {
+		if val == "" { //键不存在，返回空
+			return "", false
+		} else { //键存在，过期，删除
+			c.getCache().RemoveKey(key)
+		}
 	}
 	logrus.Debug("Get 放锁" + key)
 	return "", false

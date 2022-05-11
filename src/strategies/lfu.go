@@ -48,12 +48,36 @@ func (lfu *LFUStrategy) SetMinFreq(freq int64) {
 func (lfu *LFUStrategy) Get(key models.KeyType) (models.ValueType, bool) {
 	logrus.Debug("调用LFU的Get操作，key值为", key)
 	if element, ok := lfu.GetCacheMap()[key]; ok {
-
 		kv := element.Value.(*LFUEntry)
 		lfu.FreqInc(*kv) //增加key的使用频率
-		return kv.GetValue(), true
+		var err error
+		ok, err = lfu.JudgeKeyExpired(key)
+		if err != nil { //该键不存在
+			return "", false
+		}
+		if ok { //过期
+			return kv.GetValue(), false
+		} else { //没过期
+			return kv.GetValue(), true
+		}
 	}
 	return "", false
+}
+
+//删除一个特定的键值对
+func (lfu *LFUStrategy) RemoveKey(key models.KeyType) bool {
+	logrus.Debug("调用LFU的RemoveKey方法")
+	element, _ := lfu.GetCacheMap()[key]
+	if element != nil {
+		lfu.GetCacheList().Remove(element)
+		kv := element.Value.(*LFUEntry)
+		var tmpBytes int64 = int64(len(kv.GetKey()) + len(kv.GetValue()))
+		lfu.SubNBytes(tmpBytes)
+		//map中移除元素
+		delete(lfu.GetCacheMap(), kv.GetKey())
+		delete(lfu.GetExpiredTimeMap(), kv.GetKey())
+	}
+	return true
 }
 
 func (lfu *LFUStrategy) Remove() bool {
@@ -195,7 +219,7 @@ func (lfu *LFUStrategy) FreqInc(lfuentry LFUEntry) bool {
 func NewLFUStrategy() *LFUStrategy {
 	logrus.Debug("Create LFUCache")
 	return &LFUStrategy{
-		CacheStorage: models.NewCacheStorage(conf.Default_Max_Bytes),
+		CacheStorage: models.NewCacheStorage(conf.DEFAULT_MAX_BYTES),
 		minFreq:      1,
 		freqMap:      make(map[int64]*list.List),
 	}

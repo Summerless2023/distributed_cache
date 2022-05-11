@@ -6,8 +6,8 @@ import (
 )
 
 type ConfigStruct struct {
-	Max_Bytes int64  `ini:"Max_Bytes"`
-	Strategy  string `ini:"Strategy"`
+	Max_Bytes int64  `ini:"max_bytes"`
+	Strategy  string `ini:"strategy"`
 }
 
 var Config = &ConfigStruct{} //定义存储配置信息的全局变量
@@ -30,15 +30,15 @@ func LoadConfig() {
 
 		//读第三个文件，一定存在
 		var ConfigDefault = &ConfigStruct{}
-		ConfigDefault.Max_Bytes = Default_Max_Bytes
-		ConfigDefault.Strategy = Default_Strategy
+		ConfigDefault.Max_Bytes = DEFAULT_MAX_BYTES
+		ConfigDefault.Strategy = DEFAULT_STRATEGY
 		ModifyParameter(ConfigDefault)
 		CheckParameter()
 	})
 }
 
 func CheckParameter() {
-	if Config.Max_Bytes > Default_Max_Bytes || Config.Max_Bytes <= 0 {
+	if Config.Max_Bytes > DEFAULT_MAX_BYTES || Config.Max_Bytes <= 0 {
 		Config.Max_Bytes = 0
 	}
 	if Config.Strategy != "lru" && Config.Strategy != "lfu" && Config.Strategy != "fifo" {

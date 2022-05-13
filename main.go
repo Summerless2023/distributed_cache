@@ -1,13 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"main/conf"
+	"main/src/concurrency"
 	"main/src/models"
-	"main/src/strategies"
-	"main/src/utils"
 	"strconv"
 	"time"
+
+	"github.com/sirupsen/logrus"
 	//"net/http"
 	//"github.com/sirupsen/logrus"
 )
@@ -21,26 +21,91 @@ import (
 
 func main() {
 	conf.LoadConfig()                   //进行配置信息的加载
-	fmt.Println(conf.Config.Max_Bytes)  //在conf中定义全局变量，其他包进行引用
-	fmt.Println(conf.Config.Strategy)   //在conf中定义全局变量，其他包进行引用
-	fmt.Println(conf.Config.UpdateTime) //获取key的定期删除时间
+	logrus.Info(conf.Config.Max_Bytes)  //在conf中定义全局变量，其他包进行引用
+	logrus.Info(conf.Config.Strategy)   //在conf中定义全局变量，其他包进行引用
+	logrus.Info(conf.Config.UpdateTime) //获取key的定期删除时间
 	//var s server
 	//http.ListenAndServe("localhost:9999", &s)
+	//test1()
 
-	var ch chan int
-	ticker := time.NewTicker(time.Second * time.Duration(conf.Config.UpdateTime))
-	lru := strategies.NewLRUStrategy()
+	ConCache := concurrency.NewConcurrencyCache()
 	for i := 0; i < 10; i++ {
-		lru.Add(models.KeyType(strconv.Itoa(i)), models.ValueType(strconv.Itoa(i)), time.Now().UnixNano()+1000000000*int64(i))
+		ConCache.Add(models.KeyType(strconv.Itoa(i)), models.ValueType(strconv.Itoa(i)), time.Now().UnixNano()+1000000000*int64(i))
 	}
-	utils.PrintList(lru.GetCacheList())
+	timeout := time.After(time.Second * 100)
+	timeRegular := conf.Config.UpdateTime
+	//res := make(chan interface{}, 10000)
+	go DoTickerWorkt(timeout, ConCache, timeRegular)
+
+	test()
+
+}
+func DoTickerWorkt(timeout <-chan time.Time, cache *concurrency.ConcurrencyCache, ut int64) {
+	ticker := time.NewTicker(time.Second * time.Duration(ut))
+	//ticker := time.NewTicker(time.Second * 3)
+	done := make(chan int, 1)
 	go func() {
-		for range ticker.C {
-			lru.RemoveExpiredTimeKey()
+		//defer close(res)
+		i := 1
+		for {
+			select {
+			case <-ticker.C:
+				logrus.Info("start ", i, "th worker")
+				//功能
+				cache.DeleteRegulary()
+				//res <- i
+				i++
+			case <-timeout:
+				logrus.Info("timeout", timeout)
+				close(done)
+				return
+			}
 		}
-		ch <- 1
+		// for range ticker.C {
+		// 	i++
+		// 	logrus.Info("start ", i, "th worker")
+		// 	lru.RemoveExpiredTimeKey()
+		// }
+		// done <- 1
 	}()
-	<-ch
+	<-done
+}
+
+// func DoTickerWorkt(res chan interface{}, timeout <-chan time.Time, lru *strategies.LRUStrategy) {
+// 	//ticker := time.NewTicker(time.Second * time.Duration(conf.Config.UpdateTime))
+// 	ticker := time.NewTicker(time.Second * 3)
+// 	done := make(chan int, 1)
+// 	go func() {
+// 		defer close(res)
+// 		i := 1
+// 		for {
+// 			select {
+// 			case <-ticker.C:
+// 				logrus.Info("start ", i, "th worker")
+// 				lru.RemoveExpiredTimeKey()
+// 				res <- i
+// 				i++
+// 			case <-timeout:
+// 				logrus.Info("timeout", timeout)
+// 				close(done)
+// 				return
+// 			}
+// 		}
+// 		// for range ticker.C {
+// 		// 	i++
+// 		// 	logrus.Info("start ", i, "th worker")
+// 		// 	lru.RemoveExpiredTimeKey()
+// 		// }
+// 		// done <- 1
+// 	}()
+// 	<-done
+// }
+
+func test() {
+	for i := 0; i < 20; i++ {
+		logrus.Info("定时器后 hello " + strconv.Itoa(i))
+		time.Sleep(time.Second)
+	}
 }
 
 // func add(concurrencyCache *concurrency.ConcurrencyCache, key string, value string, wg *sync.WaitGroup) {

@@ -130,7 +130,6 @@ func (cacheStorage *CacheStorage) RemoveExpiredTimeKey() {
 		kv := i.Value.(*Entry)
 		logrus.Info(kv.GetKey(), "--", cacheStorage.expiredTimeMap[kv.GetKey()])
 	}
-
 }
 
 func NewCacheStorage(maxBytes int64) *CacheStorage {

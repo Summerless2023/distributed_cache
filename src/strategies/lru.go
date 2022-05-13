@@ -3,6 +3,7 @@ package strategies
 import (
 	"main/conf"
 	"main/src/models"
+	"time"
 
 	"github.com/sirupsen/logrus"
 )
@@ -92,6 +93,38 @@ func (lru *LRUStrategy) Remove() bool {
 	return true
 }
 
+func (lru *LRUStrategy) DeleteRegulary() bool {
+	logrus.Info("current time: ", time.Now().UnixNano(), "执行一次定期删除")
+	//任务B
+	for i := lru.CacheStorage.GetCacheList().Front(); i != nil; {
+		kv := i.Value.(*models.Entry)
+		//logrus.Info(kv.GetKey())
+		isExpired, _ := lru.CacheStorage.JudgeKeyExpired(kv.GetKey())
+		//logrus.Info(isExpired)
+		//logrus.Info(cacheStorage.expiredTimeMap[kv.GetKey()])
+		j := i
+		i = i.Next()
+		if isExpired {
+			//从list,cacheMap,expiredTimeMap中移除
+			logrus.Info("移除Element,expiredTime:")
+			logrus.Info(kv.GetKey(), "--", lru.CacheStorage.GetExpiredTimeMap()[kv.GetKey()])
+
+			logrus.Info("remove -element", j.Value.(*models.Entry).GetKey())
+			lru.CacheStorage.GetCacheList().Remove(j)
+			delete(lru.CacheStorage.GetCacheMap(), kv.GetKey())
+			delete(lru.CacheStorage.GetExpiredTimeMap(), kv.GetKey())
+			//修改内存容量
+			var tmpBytes int64 = int64(len(kv.GetKey()) + len(kv.GetValue()))
+			lru.CacheStorage.AddNBytes(tmpBytes)
+		}
+	}
+	logrus.Info("剩余Element expiredTime ")
+	for i := lru.CacheStorage.GetCacheList().Front(); i != nil; i = i.Next() {
+		kv := i.Value.(*models.Entry)
+		logrus.Info(kv.GetKey(), "--", lru.CacheStorage.GetExpiredTimeMap()[kv.GetKey()])
+	}
+	return true
+}
 func NewLRUStrategy() *LRUStrategy {
 	return &LRUStrategy{
 		CacheStorage: models.NewCacheStorage(conf.DEFAULT_MAX_BYTES),

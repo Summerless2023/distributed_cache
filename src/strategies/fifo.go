@@ -3,6 +3,7 @@ package strategies
 import (
 	"main/conf"
 	"main/src/models"
+	"time"
 
 	"github.com/sirupsen/logrus"
 )
@@ -98,4 +99,37 @@ func (fifo *FIFOStrategy) Add(key models.KeyType, value models.ValueType, expire
 		fifo.AddNBytes(tmpBytes)
 		return true
 	}
+}
+
+func (fifo *FIFOStrategy) DeleteRegulary() bool {
+	logrus.Info("current time: ", time.Now().UnixNano(), "执行一次定期删除")
+	//任务B
+	for i := fifo.CacheStorage.GetCacheList().Front(); i != nil; {
+		kv := i.Value.(*models.Entry)
+		//logrus.Info(kv.GetKey())
+		isExpired, _ := fifo.CacheStorage.JudgeKeyExpired(kv.GetKey())
+		//logrus.Info(isExpired)
+		//logrus.Info(cacheStorage.expiredTimeMap[kv.GetKey()])
+		j := i
+		i = i.Next()
+		if isExpired {
+			//从list,cacheMap,expiredTimeMap中移除
+			logrus.Info("移除Element,expiredTime:")
+			logrus.Info(kv.GetKey(), "--", fifo.CacheStorage.GetExpiredTimeMap()[kv.GetKey()])
+
+			logrus.Info("remove -element", j.Value.(*models.Entry).GetKey())
+			fifo.CacheStorage.GetCacheList().Remove(j)
+			delete(fifo.CacheStorage.GetCacheMap(), kv.GetKey())
+			delete(fifo.CacheStorage.GetExpiredTimeMap(), kv.GetKey())
+			//修改内存容量
+			var tmpBytes int64 = int64(len(kv.GetKey()) + len(kv.GetValue()))
+			fifo.CacheStorage.AddNBytes(tmpBytes)
+		}
+	}
+	logrus.Info("剩余Element expiredTime ")
+	for i := fifo.CacheStorage.GetCacheList().Front(); i != nil; i = i.Next() {
+		kv := i.Value.(*models.Entry)
+		logrus.Info(kv.GetKey(), "--", fifo.CacheStorage.GetExpiredTimeMap()[kv.GetKey()])
+	}
+	return true
 }

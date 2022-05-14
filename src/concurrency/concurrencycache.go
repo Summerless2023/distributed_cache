@@ -49,6 +49,16 @@ func (c *ConcurrencyCache) Get(key models.KeyType) (value models.ValueType, ok b
 	return "", false
 }
 
+func (c *ConcurrencyCache) DeleteRegulary() bool {
+	c.lock.Lock()
+	defer c.lock.Unlock()
+	//锁住Cache
+	if c.getCache() == nil {
+		return false
+	}
+	c.getCache().DeleteRegulary()
+	return true
+}
 func NewConcurrencyCache() *ConcurrencyCache {
 	return &ConcurrencyCache{}
 }

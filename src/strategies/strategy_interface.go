@@ -12,4 +12,6 @@ type EliminationStrategy interface {
 
 	//Remove a key's value
 	RemoveKey(key models.KeyType) bool
+
+	DeleteRegulary() bool
 }
